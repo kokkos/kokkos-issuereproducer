@@ -1,4 +1,12 @@
 Issue: https://github.com/kokkos/kokkos/issues/1905
 Reporter: Char-Aznable
 Version/SHA: 2.8.00
-Fixed in: 
+Fixed in:
+
+Erroneus behavior:
+export OMP_NUM_THREADS=2
+./test.host 1 64 2
+0 3104.000000 2080.000000 2080.000000
+Errors: 1
+
+ 

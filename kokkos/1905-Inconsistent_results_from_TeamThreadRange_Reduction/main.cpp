@@ -2,6 +2,7 @@
 
 int main(int argc, char* argv[]) {
   Kokkos::initialize(argc,argv);
+  int errors;
   {
      int N = (argc>1) ? atoi(argv[1]) : 10;
      int M = (argc>2) ? atoi(argv[2]) : 64;
@@ -24,9 +25,15 @@ int main(int argc, char* argv[]) {
        team.team_barrier();
      });
 
-     Kokkos::parallel_for(N, KOKKOS_LAMBDA (const int i) {
-       printf("%i %lf %lf %lf\n",i,results1(i),results2(i),1.0*(M*(1000*i+1)+M*(M-1)/2));
-     });
+
+     Kokkos::parallel_reduce(N, KOKKOS_LAMBDA (const int i, int& lerror) {
+       double expected = 1.0*(M*(1000*i+1)+M*(M-1)/2);
+       printf("%i %lf %lf %lf\n",i,results1(i),results2(i),expected);
+       if((expected != results1(i)) || (expected != results1(i)))
+         lerror++;
+     },errors);
   }
   Kokkos::finalize();
+  printf("Errors: %i\n",errors);
+  if(errors > 0) return 1;
 }
